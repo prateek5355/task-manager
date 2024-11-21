@@ -2,6 +2,7 @@ package com.infosys.taskmanager.controller;
 
 import java.util.List;
 
+import com.infosys.taskmanager.dto.TaskDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -34,7 +35,7 @@ public class TaskController {
      * @return
      */
     @PostMapping
-    public Task createTask(@Valid @RequestBody Task task) {
+    public Task createTask(@Valid @RequestBody TaskDto task) {
         return taskService.createTask(task);
     }
 

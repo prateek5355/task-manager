@@ -1,8 +1,11 @@
 package com.infosys.taskmanager.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.infosys.taskmanager.dto.TaskDto;
+import com.infosys.taskmanager.enums.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,8 +26,15 @@ public class TaskServiceImpl implements TaskService {
 	@Autowired
 	private TaskRepository taskRepository;
 
-	public Task createTask(Task task) {
-		task.setCreator("current-user"); // For simplicity, hardcoding the creator
+	public Task createTask(TaskDto taskDto) {
+		Task task = new Task();
+		task.setTitle(taskDto.getTitle());
+		task.setDescription(taskDto.getDescription());
+		task.setPriority(taskDto.getPriority());
+		task.setAssignee(taskDto.getAssignee());
+		task.setDueDate(taskDto.getDueDate());
+		task.setStatus(Status.TODO);
+		task.setCreator("current-user");
 		return taskRepository.save(task);
 	}
 

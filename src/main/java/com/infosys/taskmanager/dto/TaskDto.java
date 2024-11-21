@@ -1,11 +1,8 @@
 package com.infosys.taskmanager.dto;
 
 import java.util.Date;
-import java.util.List;
 
-import com.infosys.taskmanager.entity.Comment;
 import com.infosys.taskmanager.enums.Priority;
-import com.infosys.taskmanager.enums.Status;
 
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;

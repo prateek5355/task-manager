@@ -56,11 +56,10 @@ public class TaskServiceImpl implements TaskService {
 	        return task.orElse(null);
 	}
 	
-	 public Task updateTask(Long id,Task taskDetails) {
+	 public Task updateTask(Long id,TaskDto taskDetails) {
 	        Task task = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
 	        task.setTitle(taskDetails.getTitle());
 	        task.setDescription(taskDetails.getDescription());
-	        task.setStatus(taskDetails.getStatus());
 	        task.setPriority(taskDetails.getPriority());
 	        task.setAssignee(taskDetails.getAssignee());
 	        task.setDueDate(taskDetails.getDueDate());

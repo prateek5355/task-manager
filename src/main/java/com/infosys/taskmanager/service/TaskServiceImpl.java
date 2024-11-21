@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.infosys.taskmanager.dto.CommentDto;
 import com.infosys.taskmanager.dto.TaskDto;
 import com.infosys.taskmanager.enums.Status;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,9 +69,14 @@ public class TaskServiceImpl implements TaskService {
 	        taskRepository.deleteById(id);
 	    }
 	    
-	    public Task addComment(Long id, Comment comment) {
+	    public Task addComment(Long id, CommentDto commentDto) {
 	        Task task = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
-	        task.getComments().add(comment);
+			Comment comment = new Comment();
+			comment.setText(commentDto.getText());
+			comment.setAuthor(commentDto.getAuthor());
+			comment.setCreatedAt(new Date());  // Set the creation time for the comment
+			task.getComments().add(comment);
+
 	        return taskRepository.save(task);
 	    }
 	    

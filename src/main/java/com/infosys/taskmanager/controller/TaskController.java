@@ -2,6 +2,7 @@ package com.infosys.taskmanager.controller;
 
 import java.util.List;
 
+import com.infosys.taskmanager.dto.CommentDto;
 import com.infosys.taskmanager.dto.TaskDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -90,7 +91,7 @@ public class TaskController {
      * @return
      */
     @PostMapping("/{id}/comments")
-    public Task addComment(@PathVariable Long id,  @Valid  @RequestBody Comment comment) {
+    public Task addComment(@PathVariable Long id,  @Valid  @RequestBody CommentDto comment) {
         return taskService.addComment(id, comment);
     }
 

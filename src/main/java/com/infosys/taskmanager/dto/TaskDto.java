@@ -7,6 +7,7 @@ import com.infosys.taskmanager.entity.Comment;
 import com.infosys.taskmanager.enums.Priority;
 import com.infosys.taskmanager.enums.Status;
 
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -21,6 +22,7 @@ public class TaskDto {
     @NotNull(message = "Priority cannot be null")
     private Priority priority;
     @NotNull(message = "Due date cannot be null")
+    @FutureOrPresent(message = "Due date must be in the present or future")
     private Date dueDate;
     @NotNull(message = "Assignee cannot be null")
     private String assignee;

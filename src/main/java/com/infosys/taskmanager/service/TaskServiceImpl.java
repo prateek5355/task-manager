@@ -83,10 +83,9 @@ public class TaskServiceImpl implements TaskService {
 
 	        return taskRepository.save(task);
 	    }
-	    
-	    // Search tasks (Optional)
-	    public List<Task> searchTasks(String query) {
-	        return taskRepository.findByDescriptionContaining(query); // For example, searching by description
+
+	    public List<Task> searchTasks(String keyword) {
+	        return taskRepository.findByTitleAndDescription(keyword); // For example, searching by title or description description
 	    }
 
 }

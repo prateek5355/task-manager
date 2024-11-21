@@ -23,7 +23,7 @@ public interface TaskService {
 
 	Task getTask(@PathVariable Long id);
 
-	Task updateTask(Long id, Task taskDetails);
+	Task updateTask(Long id, TaskDto taskDetails);
 	TaskDeleteResponse deleteTask(Long id);
 
 	Task addComment(Long id, CommentDto comment);

@@ -72,7 +72,7 @@ public class TaskController {
      * @return
      */
     @PutMapping("/{id}")
-    public Task updateTask(@PathVariable Long id, @RequestBody Task taskDetails) {
+    public Task updateTask(@PathVariable Long id, @RequestBody TaskDto taskDetails) {
         return taskService.updateTask(id, taskDetails);
     }
 

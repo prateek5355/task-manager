@@ -22,7 +22,7 @@ public class TaskDto {
     @NotNull(message = "Priority cannot be null")
     private Priority priority;
     @NotNull(message = "Due date cannot be null")
-    @FutureOrPresent(message = "Due date must be in the present or future")
+//    @FutureOrPresent(message = "Due date must be in the present or future")
     private Date dueDate;
     @NotNull(message = "Assignee cannot be null")
     private String assignee;

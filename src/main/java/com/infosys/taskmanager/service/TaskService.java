@@ -2,6 +2,7 @@ package com.infosys.taskmanager.service;
 
 import java.util.List;
 
+import com.infosys.taskmanager.dto.CommentDto;
 import com.infosys.taskmanager.dto.TaskDto;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public interface TaskService {
 
 	void deleteTask(Long id);
 
-	Task addComment(Long id, Comment comment);
+	Task addComment(Long id, CommentDto comment);
 	
 	List<Task> searchTasks(String query);
 }

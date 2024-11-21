@@ -20,27 +20,17 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-    @NotNull(message = "Title cannot be null")
-    @Size(min = 1, max = 100, message = "Title must be between 1 and 100 characters")
     private String title;
-
-    @Size(max = 500, message = "Description must be at most 500 characters")
     private String description;
-
-    @NotNull(message = "Status cannot be null")
     @Enumerated(EnumType.STRING) // Ensures the enum is stored as a string in the database
     private Status status; // TODO | IN_PROGRESS | DONE
 
-    @NotNull(message = "Priority cannot be null")
     @Enumerated(EnumType.STRING) // Ensure that the enum is stored as a string in the database
     private Priority priority; // Low | Medium | High
 
     private String assignee;
     private String creator;
 
-    @NotNull(message = "Due date cannot be null")
-    @FutureOrPresent(message = "Due date must be in the present or future")
     private Date dueDate;
 
     @CreationTimestamp

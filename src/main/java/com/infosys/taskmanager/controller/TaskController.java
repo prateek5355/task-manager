@@ -1,30 +1,50 @@
 package com.infosys.taskmanager.controller;
 
-import com.infosys.taskmanager.entity.Comment;
-import com.infosys.taskmanager.entity.Task;
-import com.infosys.taskmanager.repository.TaskRepository;
-import jakarta.validation.Valid;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-import java.util.Optional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.infosys.taskmanager.entity.Comment;
+import com.infosys.taskmanager.entity.Task;
+import com.infosys.taskmanager.service.TaskService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/tasks")
 public class TaskController {
 
     @Autowired
-    private TaskRepository taskRepository;
+    private TaskService taskService;
 
+    /**
+     * @param task
+     * @return
+     */
     @PostMapping
     public Task createTask(@Valid @RequestBody Task task) {
-        task.setCreator("current-user"); // For simplicity, hardcoding the creator
-        return taskRepository.save(task);
+        return taskService.createTask(task);
     }
 
+    /**
+     * @param status
+     * @param priority
+     * @param page
+     * @param size
+     * @return
+     */
     @GetMapping
     public Page<Task> listTasks(
             @RequestParam(required = false) String status,
@@ -32,49 +52,54 @@ public class TaskController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Pageable pageable = PageRequest.of(page, size);
-
-        if (status != null && priority != null) {
-            return taskRepository.findByStatusAndPriority(status, priority, pageable);
-        } else {
-            return taskRepository.findAll(pageable);
-        }
+    	return taskService.listTasks(status,priority,page,size);
     }
 
+    /**
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
     public Task getTask(@PathVariable Long id) {
-        Optional<Task> task = taskRepository.findById(id);
-        return task.orElse(null);
+		return taskService.getTask(id); 
     }
 
+    /**
+     * @param id
+     * @param taskDetails
+     * @return
+     */
     @PutMapping("/{id}")
     public Task updateTask(@PathVariable Long id, @RequestBody Task taskDetails) {
-        Task task = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
-        task.setTitle(taskDetails.getTitle());
-        task.setDescription(taskDetails.getDescription());
-        task.setStatus(taskDetails.getStatus());
-        task.setPriority(taskDetails.getPriority());
-        task.setAssignee(taskDetails.getAssignee());
-        task.setDueDate(taskDetails.getDueDate());
-        return taskRepository.save(task);
+        return taskService.updateTask(id, taskDetails);
     }
 
+    /**
+     * @param id
+     */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTask(@PathVariable Long id) {
-        taskRepository.deleteById(id);
-    }
+        taskService.deleteTask(id);
+        }
 
+    /**
+     * @param id
+     * @param comment
+     * @return
+     */
     @PostMapping("/{id}/comments")
     public Task addComment(@PathVariable Long id,  @Valid  @RequestBody Comment comment) {
-        Task task = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
-        task.getComments().add(comment);
-        return taskRepository.save(task);
+        return taskService.addComment(id, comment);
     }
 
     // Search tasks (Optional)
-//    @GetMapping("/search")
-//    public List<Task> searchTasks(@RequestParam String query) {
-//        return taskRepository.findByDescriptionContaining(query); // For example, searching by description
-//    }
+    /**
+     * @param query
+     * @return
+     */
+    @GetMapping("/search")
+    public List<Task> searchTasks(@RequestParam String query) {
+        return taskService.searchTasks(query); // For example, searching by description
+    }
 }

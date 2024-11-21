@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.infosys.taskmanager.dto.CommentDto;
+import com.infosys.taskmanager.dto.TaskDeleteResponse;
 import com.infosys.taskmanager.dto.TaskDto;
 import com.infosys.taskmanager.enums.Status;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,8 +66,11 @@ public class TaskServiceImpl implements TaskService {
 	        return taskRepository.save(task);
 	    }
 
-	    public void deleteTask(Long id) {
+	    public TaskDeleteResponse deleteTask(Long id) {
 	        taskRepository.deleteById(id);
+			TaskDeleteResponse taskDeleteResponse = new TaskDeleteResponse();
+			taskDeleteResponse.setMessage("Task with id:" +id+ " is deleted successfully");
+			return taskDeleteResponse;
 	    }
 	    
 	    public Task addComment(Long id, CommentDto commentDto) {

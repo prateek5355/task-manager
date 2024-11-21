@@ -1,7 +1,5 @@
 package com.infosys.taskmanager.dto;
 
-import java.util.Date;
-
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;

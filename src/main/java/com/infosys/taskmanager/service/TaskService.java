@@ -3,6 +3,7 @@ package com.infosys.taskmanager.service;
 import java.util.List;
 
 import com.infosys.taskmanager.dto.CommentDto;
+import com.infosys.taskmanager.dto.TaskDeleteResponse;
 import com.infosys.taskmanager.dto.TaskDto;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -23,8 +24,7 @@ public interface TaskService {
 	Task getTask(@PathVariable Long id);
 
 	Task updateTask(Long id, Task taskDetails);
-
-	void deleteTask(Long id);
+	TaskDeleteResponse deleteTask(Long id);
 
 	Task addComment(Long id, CommentDto comment);
 	

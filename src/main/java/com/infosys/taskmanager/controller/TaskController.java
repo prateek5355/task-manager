@@ -3,6 +3,7 @@ package com.infosys.taskmanager.controller;
 import java.util.List;
 
 import com.infosys.taskmanager.dto.CommentDto;
+import com.infosys.taskmanager.dto.TaskDeleteResponse;
 import com.infosys.taskmanager.dto.TaskDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.infosys.taskmanager.entity.Comment;
 import com.infosys.taskmanager.entity.Task;
 import com.infosys.taskmanager.service.TaskService;
 
@@ -80,9 +80,8 @@ public class TaskController {
      * @param id
      */
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTask(@PathVariable Long id) {
-        taskService.deleteTask(id);
+    public TaskDeleteResponse deleteTask(@PathVariable Long id) {
+        return taskService.deleteTask(id);
         }
 
     /**

@@ -34,6 +34,7 @@ public class Task {
     private Priority priority; // Low | Medium | High
 
     private String assignee;
+
     private String creator;
 
     @NotNull(message = "Due date cannot be null")

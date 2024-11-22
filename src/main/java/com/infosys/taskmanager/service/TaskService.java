@@ -17,7 +17,7 @@ public interface TaskService {
 	
 	Task createTask(TaskDto task);
 
-	Page<Task> listTasks(String status, String priority, int page, int size);
+	List<Task> listTasks(String status, String priority);
 
 	Task getTask(@PathVariable Long id);
 
@@ -27,4 +27,5 @@ public interface TaskService {
 	Task addComment(Long id, CommentDto comment);
 	
 	List<Task> searchTasks(String keyword);
+	List<Task> getAllTasks();
 }

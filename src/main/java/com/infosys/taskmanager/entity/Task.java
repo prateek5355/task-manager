@@ -3,6 +3,8 @@ package com.infosys.taskmanager.entity;
 import java.util.Date;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -21,6 +23,8 @@ import lombok.Data;
 
 @Data
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public class Task {
 
     @Id

@@ -7,12 +7,10 @@ import java.util.Optional;
 import com.infosys.taskmanager.dto.CommentDto;
 import com.infosys.taskmanager.dto.TaskDeleteResponse;
 import com.infosys.taskmanager.dto.TaskDto;
+import com.infosys.taskmanager.enums.Priority;
 import com.infosys.taskmanager.enums.Status;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -41,12 +39,11 @@ public class TaskServiceImpl implements TaskService {
 		return taskRepository.save(task);
 	}
 
-	public List<Task> listTasks(String status, String priority) {
-		Status statusEnum = Status.fromString(status);
+	public List<Task> listTasks(Status status, Priority priority) {
 		if (status != null && priority != null) {
-			return taskRepository.findByStatusAndPriority(String.valueOf(statusEnum), priority);
+			return taskRepository.findByStatusAndPriority(status, priority);
 		} else if (status != null) {
-			return taskRepository.findByStatus(String.valueOf(statusEnum));
+			return taskRepository.findByStatus(status);
 		} else if (priority != null) {
 			return taskRepository.findByPriority(priority);
 		} else {
@@ -77,27 +74,17 @@ public class TaskServiceImpl implements TaskService {
 	    }
 	    
 	    public Task addComment(Long id, CommentDto commentDto) {
-	        Task task = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
+	        Task task = taskRepository.findById(id).orElseThrow(() -> new NullPointerException("Task not found"));
 			Comment comment = new Comment();
 			comment.setText(commentDto.getText());
 			comment.setAuthor(commentDto.getAuthor());
-			comment.setCreatedAt(new Date());  // Set the creation time for the comment
+			comment.setCreatedAt(new Date());
 			task.getComments().add(comment);
-
 	        return taskRepository.save(task);
 	    }
 
 	    public List<Task> searchTasks(String keyword) {
-	        return taskRepository.findByTitleAndDescription(keyword); // For example, searching by title or description description
+	        return taskRepository.findByTitleAndDescription(keyword);
 	    }
-
-	/**
-	 * Fetch all tasks from the database.
-	 *
-	 * @return List<Task> A list of all tasks.
-	 */
-	public List<Task> getAllTasks() {
-		return taskRepository.findAll(); // Fetch all tasks
-	}
 
 }

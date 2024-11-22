@@ -2,6 +2,8 @@ package com.infosys.taskmanager.service;
 
 import java.util.List;
 
+import com.infosys.taskmanager.enums.Priority;
+import com.infosys.taskmanager.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -17,7 +19,7 @@ public interface TaskService {
 	
 	Task createTask(TaskDto task);
 
-	List<Task> listTasks(String status, String priority);
+	List<Task> listTasks(Status status, Priority priority);
 
 	Task getTask(@PathVariable Long id);
 
@@ -27,5 +29,4 @@ public interface TaskService {
 	Task addComment(Long id, CommentDto comment);
 	
 	List<Task> searchTasks(String keyword);
-	List<Task> getAllTasks();
 }

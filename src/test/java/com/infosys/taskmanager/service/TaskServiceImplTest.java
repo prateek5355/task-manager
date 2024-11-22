@@ -1,134 +1,198 @@
 package com.infosys.taskmanager.service;
 
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.*;
 
 import com.infosys.taskmanager.dto.CommentDto;
+import com.infosys.taskmanager.dto.TaskDeleteResponse;
 import com.infosys.taskmanager.dto.TaskDto;
 import com.infosys.taskmanager.entity.Comment;
 import com.infosys.taskmanager.entity.Task;
 import com.infosys.taskmanager.enums.Priority;
 import com.infosys.taskmanager.enums.Status;
 import com.infosys.taskmanager.repository.TaskRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@SpringBootTest
+import java.util.*;
+
+@ExtendWith(MockitoExtension.class)
 public class TaskServiceImplTest {
+
 	@Mock
 	private TaskRepository taskRepository;
 
 	@InjectMocks
 	private TaskServiceImpl taskService;
 
-	String test;
-	Task task;
-	TaskDto taskDto;
-	Pageable pageable;
-	List<Comment> comments;
-	Comment comment;
-	Page<Task> page;
-	List<Task> tasks;
-	CommentDto commentDto;
+	private Task task;
+	private TaskDto taskDto;
+	private CommentDto commentDto;
 
 	@BeforeEach
-	void setUp() {
-		test = "Test";
-		pageable = (Pageable) PageRequest.of(0, 20);
-		tasks = new ArrayList<Task>();
-
+	public void setUp() {
+		MockitoAnnotations.openMocks(this);
 		task = new Task();
-		comment = new Comment();
-		comments = new ArrayList<Comment>();
-
-		comment.setAuthor(test);
-		comment.setCreatedAt(new Date());
-		comment.setId((long) 123);
-		comment.setText(test);
-		comments.add(comment);
-
-		commentDto = new CommentDto();
-		commentDto.setAuthor(test);
-		commentDto.setText(test);
-
-		task.setId((long) 1);
-		task.setComments(comments);
-		task.setAssignee(test);
-		task.setDescription(test);
-		task.setDueDate(new Date());
+		task.setId(1L);
+		task.setTitle("Test Task");
+		task.setDescription("Test Description");
 		task.setPriority(Priority.HIGH);
-		task.setTitle(test);
-		task.setCreatedAt(new Date());
-		task.setCreator(test);
-		task.setStatus(Status.DONE);
-		task.setUpdatedAt(new Date());
+		task.setAssignee("user");
+		task.setDueDate(new Date());
+		task.setStatus(Status.TODO);
+		task.setCreator("current-user");
 
 		taskDto = new TaskDto();
-		taskDto.setAssignee(test);
-		taskDto.setDescription(test);
-		taskDto.setDueDate(new Date());
+		taskDto.setTitle("Test Task");
+		taskDto.setDescription("Test Description");
 		taskDto.setPriority(Priority.HIGH);
-		taskDto.setTitle(test);
-		tasks.add(task);
-		page = new PageImpl<Task>(tasks, pageable, 0);
+		taskDto.setAssignee("user");
+		taskDto.setDueDate(new Date());
+
+		commentDto = new CommentDto();
+		commentDto.setText("Test Comment");
+		commentDto.setAuthor("user");
 	}
 
 	@Test
-	public void createTask() {
-//		when(taskRepository.findByCreator(test, pageable)).thenReturn(page);
-//		taskService.createTask(taskDto);
-//		Task response = taskService.createTask(taskDto);
-//		assertEquals(response.getTitle(), taskDto.getTitle());
+	public void testCreateTask() {
+		when(taskRepository.save(any(Task.class))).thenReturn(task);
+
+		Task createdTask = taskService.createTask(taskDto);
+
+		assertNotNull(createdTask);
+		assertEquals("Test Task", createdTask.getTitle());
+		assertEquals("Test Description", createdTask.getDescription());
+		assertEquals(Priority.HIGH, createdTask.getPriority());
+		assertEquals("user", createdTask.getAssignee());
+		assertEquals(Status.TODO, createdTask.getStatus());
+		verify(taskRepository, times(1)).save(any(Task.class));
 	}
 
 	@Test
-	public void listTasks() {
-		when(taskRepository.findAll()).thenReturn(tasks);
-//		taskService.listTasks(test, test, 1, 10);
+	public void testListTasks_WithStatusAndPriority() {
+		when(taskRepository.findByStatusAndPriority(Status.TODO, Priority.HIGH)).thenReturn(Collections.singletonList(task));
+
+		List<Task> tasks = taskService.listTasks(Status.TODO, Priority.HIGH);
+
+		assertNotNull(tasks);
+		assertEquals(1, tasks.size());
+		assertEquals(task, tasks.get(0));
+		verify(taskRepository, times(1)).findByStatusAndPriority(Status.TODO, Priority.HIGH);
 	}
 
 	@Test
-	public void getTask() {
-		when(taskRepository.findById((long) 1)).thenReturn(Optional.of(task));
-		taskService.getTask((long) 1);
+	public void testListTasks_WithStatusOnly() {
+		when(taskRepository.findByStatus(Status.TODO)).thenReturn(Collections.singletonList(task));
+
+		List<Task> tasks = taskService.listTasks(Status.TODO, null);
+
+		assertNotNull(tasks);
+		assertEquals(1, tasks.size());
+		assertEquals(task, tasks.get(0));
+		verify(taskRepository, times(1)).findByStatus(Status.TODO);
 	}
 
 	@Test
-	public void updateTask() {
-		when(taskRepository.findById((long) 1)).thenReturn(Optional.of(task));
-		when(taskRepository.save(task)).thenReturn(task);
-//		taskService.updateTask((long) 1, task);
+	public void testListTasks_WithPriorityOnly() {
+		when(taskRepository.findByPriority(Priority.HIGH)).thenReturn(Collections.singletonList(task));
+
+		List<Task> tasks = taskService.listTasks(null, Priority.HIGH);
+
+		assertNotNull(tasks);
+		assertEquals(1, tasks.size());
+		assertEquals(task, tasks.get(0));
+		verify(taskRepository, times(1)).findByPriority(Priority.HIGH);
 	}
 
 	@Test
-	public void deleteTask() {
-		taskService.deleteTask((long) 1);
+	public void testListTasks_WithoutFilters() {
+		when(taskRepository.findAll()).thenReturn(Collections.singletonList(task));
+
+		List<Task> tasks = taskService.listTasks(null, null);
+
+		assertNotNull(tasks);
+		assertEquals(1, tasks.size());
+		assertEquals(task, tasks.get(0));
+		verify(taskRepository, times(1)).findAll();
 	}
 
 	@Test
-	public void addComment() {
-		when(taskRepository.findById((long) 1)).thenReturn(Optional.of(task));
-		when(taskRepository.save(task)).thenReturn(task);
-		taskService.addComment((long) 1, commentDto);
+	public void testGetTask() {
+		when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+
+		Task foundTask = taskService.getTask(1L);
+
+		assertNotNull(foundTask);
+		assertEquals(task, foundTask);
+		verify(taskRepository, times(1)).findById(1L);
 	}
 
 	@Test
-	public void searchTasks() {
-		when(taskRepository.findByTitleAndDescription(test)).thenReturn(tasks);
-		when(taskRepository.save(task)).thenReturn(task);
-		taskService.searchTasks(test);
+	public void testUpdateTask() {
+		Task updatedTask = new Task();
+		updatedTask.setTitle("Updated Title");
+		updatedTask.setDescription("Updated Description");
+		updatedTask.setPriority(Priority.MEDIUM);
+		updatedTask.setAssignee("updated-user");
+		updatedTask.setDueDate(new Date());
+
+		when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+		when(taskRepository.save(any(Task.class))).thenReturn(updatedTask);
+
+		Task result = taskService.updateTask(1L, taskDto);
+
+		assertNotNull(result);
+		assertEquals("Updated Title", result.getTitle());
+		assertEquals("Updated Description", result.getDescription());
+		assertEquals(Priority.MEDIUM, result.getPriority());
+		assertEquals("updated-user", result.getAssignee());
+		verify(taskRepository, times(1)).findById(1L);
+		verify(taskRepository, times(1)).save(any(Task.class));
 	}
 
+	@Test
+	public void testDeleteTask() {
+		doNothing().when(taskRepository).deleteById(1L);
+
+		TaskDeleteResponse response = taskService.deleteTask(1L);
+
+		assertNotNull(response);
+		assertEquals("Task with id:1 is deleted successfully", response.getMessage());
+		verify(taskRepository, times(1)).deleteById(1L);
+	}
+
+	@Test
+	public void testAddComment() {
+		Comment comment = new Comment();
+		comment.setText(commentDto.getText());
+		comment.setAuthor(commentDto.getAuthor());
+		comment.setCreatedAt(new Date());
+		task.setComments(Collections.singletonList(comment));
+		when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+		when(taskRepository.save(any(Task.class))).thenReturn(task);
+		Task updatedTask = taskService.addComment(1L, commentDto);
+
+		assertNotNull(updatedTask);
+		assertEquals(1, updatedTask.getComments().size());
+		assertEquals(commentDto.getText(), updatedTask.getComments().get(0).getText());
+		verify(taskRepository, times(1)).findById(1L);
+		verify(taskRepository, times(1)).save(any(Task.class));
+	}
+
+	@Test
+	public void testSearchTasks() {
+		when(taskRepository.findByTitleAndDescription("Test")).thenReturn(Collections.singletonList(task));
+
+		List<Task> tasks = taskService.searchTasks("Test");
+
+		assertNotNull(tasks);
+		assertEquals(1, tasks.size());
+		assertEquals(task, tasks.get(0));
+		verify(taskRepository, times(1)).findByTitleAndDescription("Test");
+	}
 }

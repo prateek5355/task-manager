@@ -47,19 +47,12 @@ public class TaskControllerTest {
     private TaskController taskController;
 
     private Task task;
-    private List<Task> taskList;
 
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         mockMvc= MockMvcBuilders.standaloneSetup(taskController).build();
-        // Create some test task data
-        taskList = Arrays.asList(
-                new Task(53L, "Fix Login Bug", "Users unable to login using SSO", Status.TODO, Priority.HIGH, "john.don", "current-user", new Date(), new Date(), new Date(), Arrays.asList()),
-                new Task(102L, "Fix Login Bug", "Users unable to login using SSO", Status.TODO, Priority.HIGH, "john.don", "current-user", new Date(), new Date(), new Date(), Arrays.asList())
-        );
-
     }
 
     @Test
@@ -173,29 +166,36 @@ public class TaskControllerTest {
 
     @Test
     public void testGetAllTasks() throws Exception {
-        // Mock the service to return the taskList when getAllTasks() is called
-        when(taskService.getAllTasks()).thenReturn(taskList);
-
-        // Perform the GET request and assert the response
+        List<Task> taskList = Arrays.asList(
+                new Task(53L, "Fix Login Bug", "Users unable to login using SSO", Status.TODO, Priority.HIGH, "john.don", "current-user", new Date(), new Date(), new Date(), List.of()),
+                new Task(102L, "Fix Login Bug", "Users unable to login using SSO", Status.TODO, Priority.HIGH, "john.don", "current-user", new Date(), new Date(), new Date(), List.of())
+        );
+        when(taskService.listTasks(null,null)).thenReturn(taskList);
         mockMvc.perform(get("/api/tasks"))
-                .andExpect(status().isOk())  // Assert that the status code is OK (200)
-                .andExpect(jsonPath("$.total").value(2))  // Assert that the total count of tasks is 2
-                .andExpect(jsonPath("$.tasks").isArray())  // Assert that the "tasks" field is an array
-                .andExpect(jsonPath("$.tasks[0].id").value(53))  // Assert the first task's id is 53
-                .andExpect(jsonPath("$.tasks[1].id").value(102));  // Assert the second task's id is 102
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.total").value(2))
+                .andExpect(jsonPath("$.tasks").isArray())
+                .andExpect(jsonPath("$.tasks[0].id").value(53))
+                .andExpect(jsonPath("$.tasks[1].id").value(102));
     }
 
 
-//    @Test
-//    public void testSearchTasks() throws Exception {
-//        when(taskService.searchTasks(any())).thenReturn(Collections.singletonList(task));
-//
-//        mockMvc.perform(get("/api/tasks/search")
-//                        .param("query", "SSO")
-//                )
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$[0].id").value(1))
-//                .andExpect(jsonPath("$[0].title").value("Fix Login Bug"));
-//    }
+    @Test
+    public void testSearchTasks() throws Exception {
+        task = new Task();
+        task.setId(1L);
+        task.setTitle("Fix Login Bug");
+        task.setStatus(Status.TODO);
+        task.setPriority(Priority.HIGH);
+        task.setAssignee("john.doe");
+        task.setCreator("admin");
+        when(taskService.searchTasks(any())).thenReturn(Collections.singletonList(task));
+        mockMvc.perform(get("/api/tasks/search")
+                        .param("keyword", "Fix Login Bug")
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].title").value("Fix Login Bug"));
+    }
 }
 

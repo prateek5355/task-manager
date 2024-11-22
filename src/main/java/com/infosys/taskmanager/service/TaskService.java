@@ -17,15 +17,15 @@ public interface TaskService {
 	
 	Task createTask(TaskDto task);
 
-	Page<Task> listTasks(String status, String priority, int page, int size);
+	List<Task> listTasks(String status, String priority);
 
 	Task getTask(@PathVariable Long id);
 
-	Task updateTask(Long id, Task taskDetails);
-	
+	Task updateTask(Long id, TaskDto taskDetails);
 	TaskDeleteResponse deleteTask(Long id);
 
 	Task addComment(Long id, CommentDto comment);
 	
 	List<Task> searchTasks(String keyword);
+	List<Task> getAllTasks();
 }

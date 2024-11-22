@@ -1,5 +1,6 @@
 package com.infosys.taskmanager.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -75,6 +76,9 @@ public class TaskServiceImpl implements TaskService {
 	    
 	    public Task addComment(Long id, CommentDto commentDto) {
 	        Task task = taskRepository.findById(id).orElseThrow(() -> new NullPointerException("Task not found"));
+			if (task.getComments() == null) {
+				task.setComments(new ArrayList<>());
+			}
 			Comment comment = new Comment();
 			comment.setText(commentDto.getText());
 			comment.setAuthor(commentDto.getAuthor());

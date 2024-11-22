@@ -172,17 +172,19 @@ public class TaskServiceImplTest {
 		comment.setText(commentDto.getText());
 		comment.setAuthor(commentDto.getAuthor());
 		comment.setCreatedAt(new Date());
-		task.setComments(Collections.singletonList(comment));
+		List<Comment> comments = new ArrayList<>();
+		comments.add(comment);
+		task.setComments(comments);
 		when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
 		when(taskRepository.save(any(Task.class))).thenReturn(task);
 		Task updatedTask = taskService.addComment(1L, commentDto);
-
 		assertNotNull(updatedTask);
-		assertEquals(1, updatedTask.getComments().size());
+		assertEquals(2, updatedTask.getComments().size());
 		assertEquals(commentDto.getText(), updatedTask.getComments().get(0).getText());
 		verify(taskRepository, times(1)).findById(1L);
 		verify(taskRepository, times(1)).save(any(Task.class));
 	}
+
 
 	@Test
 	public void testSearchTasks() {

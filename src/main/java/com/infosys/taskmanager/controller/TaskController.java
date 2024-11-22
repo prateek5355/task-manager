@@ -1,7 +1,10 @@
 package com.infosys.taskmanager.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.infosys.taskmanager.dto.TaskResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,20 +42,28 @@ public class TaskController {
     }
 
     /**
-     * @param status
-     * @param priority
-     * @param page
-     * @param size
-     * @return
+     * Get all tasks and the total count.
+     *
+     * @return TaskResponse containing the total count and the list of tasks.
      */
-    @GetMapping
-    public Page<Task> listTasks(
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) String priority,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+//    @GetMapping
+//    public TaskResponse getAllTasks() {
+//        List<Task> tasks = taskService.getAllTasks();
+//        TaskResponse response = new TaskResponse();
+//        response.setTotal(tasks.size());
+//        response.setTasks(tasks);
+//        return response;
+//    }
 
-    	return taskService.listTasks(status,priority,page,size);
+    @GetMapping
+    public TaskResponse listTasks(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String priority) {
+        List<Task> tasks = taskService.listTasks(status, priority);
+        TaskResponse response = new TaskResponse();
+        response.setTotal(tasks.size());
+        response.setTasks(tasks);
+        return response;
     }
 
     /**

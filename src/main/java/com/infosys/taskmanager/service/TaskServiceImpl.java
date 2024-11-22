@@ -41,13 +41,16 @@ public class TaskServiceImpl implements TaskService {
 		return taskRepository.save(task);
 	}
 
-	public Page<Task> listTasks(String status, String priority, int page, int size) {
-		Pageable pageable = PageRequest.of(page, size);
-
+	public List<Task> listTasks(String status, String priority) {
+		Status statusEnum = Status.fromString(status);
 		if (status != null && priority != null) {
-			return taskRepository.findByStatusAndPriority(status, priority, pageable);
+			return taskRepository.findByStatusAndPriority(String.valueOf(statusEnum), priority);
+		} else if (status != null) {
+			return taskRepository.findByStatus(String.valueOf(statusEnum));
+		} else if (priority != null) {
+			return taskRepository.findByPriority(priority);
 		} else {
-			return taskRepository.findAll(pageable);
+			return taskRepository.findAll();
 		}
 	}
 
@@ -87,5 +90,14 @@ public class TaskServiceImpl implements TaskService {
 	    public List<Task> searchTasks(String keyword) {
 	        return taskRepository.findByTitleAndDescription(keyword); // For example, searching by title or description description
 	    }
+
+	/**
+	 * Fetch all tasks from the database.
+	 *
+	 * @return List<Task> A list of all tasks.
+	 */
+	public List<Task> getAllTasks() {
+		return taskRepository.findAll(); // Fetch all tasks
+	}
 
 }

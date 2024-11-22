@@ -24,10 +24,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -50,11 +47,18 @@ public class TaskControllerTest {
     private TaskController taskController;
 
     private Task task;
+    private List<Task> taskList;
+
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         mockMvc= MockMvcBuilders.standaloneSetup(taskController).build();
+        // Create some test task data
+        taskList = Arrays.asList(
+                new Task(53L, "Fix Login Bug", "Users unable to login using SSO", Status.TODO, Priority.HIGH, "john.don", "current-user", new Date(), new Date(), new Date(), Arrays.asList()),
+                new Task(102L, "Fix Login Bug", "Users unable to login using SSO", Status.TODO, Priority.HIGH, "john.don", "current-user", new Date(), new Date(), new Date(), Arrays.asList())
+        );
 
     }
 
@@ -166,20 +170,21 @@ public class TaskControllerTest {
                 .andExpect(jsonPath("$.comments[0].author").value("john.doe"));
     }
 
-//    @Test
-//    public void testListTasks() throws Exception {
-//        when(taskService.listTasks(any(), any(), anyInt(), anyInt())).thenReturn(Collections.singletonList(task));
-//
-//        mockMvc.perform(get("/api/tasks")
-//                        .param("status", "TODO")
-//                        .param("priority", "High")
-//                        .param("page", "0")
-//                        .param("size", "10")
-//                )
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$[0].id").value(1))
-//                .andExpect(jsonPath("$[0].title").value("Fix Login Bug"));
-//    }
+
+    @Test
+    public void testGetAllTasks() throws Exception {
+        // Mock the service to return the taskList when getAllTasks() is called
+        when(taskService.getAllTasks()).thenReturn(taskList);
+
+        // Perform the GET request and assert the response
+        mockMvc.perform(get("/api/tasks"))
+                .andExpect(status().isOk())  // Assert that the status code is OK (200)
+                .andExpect(jsonPath("$.total").value(2))  // Assert that the total count of tasks is 2
+                .andExpect(jsonPath("$.tasks").isArray())  // Assert that the "tasks" field is an array
+                .andExpect(jsonPath("$.tasks[0].id").value(53))  // Assert the first task's id is 53
+                .andExpect(jsonPath("$.tasks[1].id").value(102));  // Assert the second task's id is 102
+    }
+
 
 //    @Test
 //    public void testSearchTasks() throws Exception {

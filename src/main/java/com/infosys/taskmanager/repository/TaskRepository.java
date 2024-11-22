@@ -12,9 +12,9 @@ import com.infosys.taskmanager.entity.Task;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
-    Page<Task> findByStatusAndPriority(String status, String priority, Pageable pageable);
-    Page<Task> findByCreator(String creator, Pageable pageable);
-    Page<Task> findByAssignee(String assignee, Pageable pageable);
+    List<Task> findByStatus(String status);
+    List<Task> findByPriority(String priority);
+    List<Task> findByStatusAndPriority(String status, String priority);
     
     @Query("SELECT t FROM Task t WHERE " +
             "t.title LIKE CONCAT('%',:query, '%')" +

@@ -10,6 +10,7 @@ import com.infosys.taskmanager.dto.TaskDeleteResponse;
 import com.infosys.taskmanager.dto.TaskDto;
 import com.infosys.taskmanager.enums.Priority;
 import com.infosys.taskmanager.enums.Status;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
@@ -30,13 +31,8 @@ public class TaskServiceImpl implements TaskService {
 
 	public Task createTask(TaskDto taskDto) {
 		Task task = new Task();
-		task.setTitle(taskDto.getTitle());
-		task.setDescription(taskDto.getDescription());
-		task.setPriority(taskDto.getPriority());
-		task.setAssignee(taskDto.getAssignee());
-		task.setDueDate(taskDto.getDueDate());
-		task.setStatus(Status.TODO);
-		task.setCreator("current-user");
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.map(taskDto, task);
 		return taskRepository.save(task);
 	}
 
@@ -59,11 +55,8 @@ public class TaskServiceImpl implements TaskService {
 	
 	 public Task updateTask(Long id,TaskDto taskDetails) {
 	        Task task = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
-	        task.setTitle(taskDetails.getTitle());
-	        task.setDescription(taskDetails.getDescription());
-	        task.setPriority(taskDetails.getPriority());
-	        task.setAssignee(taskDetails.getAssignee());
-	        task.setDueDate(taskDetails.getDueDate());
+		    ModelMapper modelMapper = new ModelMapper();
+		    modelMapper.map(taskDetails, task);
 	        return taskRepository.save(task);
 	    }
 
@@ -73,21 +66,22 @@ public class TaskServiceImpl implements TaskService {
 			taskDeleteResponse.setMessage("Task with id:" +id+ " is deleted successfully");
 			return taskDeleteResponse;
 	    }
-	    
-	    public Task addComment(Long id, CommentDto commentDto) {
-	        Task task = taskRepository.findById(id).orElseThrow(() -> new NullPointerException("Task not found"));
-			if (task.getComments() == null) {
-				task.setComments(new ArrayList<>());
-			}
-			Comment comment = new Comment();
-			comment.setText(commentDto.getText());
-			comment.setAuthor(commentDto.getAuthor());
-			comment.setCreatedAt(new Date());
-			task.getComments().add(comment);
-	        return taskRepository.save(task);
-	    }
 
-	    public List<Task> searchTasks(String keyword) {
+	public Task addComment(Long id, CommentDto commentDto) {
+		Task task = taskRepository.findById(id)
+				.orElseThrow(() -> new NullPointerException("Task not found"));
+		if (task.getComments() == null) {
+			task.setComments(new ArrayList<>());
+		}
+		ModelMapper modelMapper = new ModelMapper();
+		Comment comment = modelMapper.map(commentDto, Comment.class);
+		comment.setCreatedAt(new Date());
+		task.getComments().add(comment);
+		return taskRepository.save(task);
+	}
+
+
+	public List<Task> searchTasks(String keyword) {
 	        return taskRepository.findByTitleAndDescription(keyword);
 	    }
 

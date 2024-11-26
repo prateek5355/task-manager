@@ -32,14 +32,13 @@ public class Task {
     private Long id;
     private String title;
     private String description;
-    @Enumerated(EnumType.STRING) // Ensures the enum is stored as a string in the database
-    private Status status; // TODO | IN_PROGRESS | DONE
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.TODO;
 
-    @Enumerated(EnumType.STRING) // Ensure that the enum is stored as a string in the database
-    private Priority priority; // Low | Medium | High
-
+    @Enumerated(EnumType.STRING)
+    private Priority priority = Priority.LOW;
     private String assignee;
-    private String creator;
+    private String creator ="current-user" ;
 
     private Date dueDate;
 
